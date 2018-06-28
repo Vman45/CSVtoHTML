@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSV to HTML</title>
+</head>
+<body>
+    <form onsubmit="return fileread();">
+        <h2>Upload a file to see its contents</h2>
+        <!-- We have to use the manual input method because client sided html cannot automatically open local files -->
+        <input id="fileForUpload" type=file>
+    </form>
+    <div id="fileContents">
+        <p>
+            Contents will be displayed here
+        </p>
+    </div>
+</body>
+<script>
+    /* This section should be used for variables that will differ for each CSV  */
+    let delim = ",";
+    /* This section should be used for variables that will differ for each CSV */
+
+    function updateTable() {
+        let file = document.getElementById("fileForUpload").files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload = function (evt) {
+                let contents = evt.target.result; // reads the file contents into this variable
+                let rows = contents.split(/\r?\n/); // split using regex so we can use on windows and unix
+
+                // Read the CSV 
+                let tbl = document.createElement("table");
+                rows.forEach(function(part, i, rowArr){
+                    if (rowArr[i]){
+                        rowArr[i] = rowArr[i].split(",");
+                        let tr = document.createElement("tr");
+                        rowArr[i].forEach(function(part2, j, valArr){
+                            let td = document.createElement("td");
+                            td.appendChild(document.createTextNode(valArr[j]));
+                            tr.appendChild(td);
+                        });
+                        tr.setAttribute("align", "center")
+                        tbl.appendChild(tr);
+                    }
+                });
+                tbl.setAttribute("border", "2");
+
+                let main = document.getElementById("fileContents");
+                main.parentNode.replaceChild(tbl, main);
+            }
+            reader.onerror = function (evt) {
+                document.getElementById("fileContents").innerHTML = "error reading file";
+            }
+        }
+    }
+</script>
+</html>
