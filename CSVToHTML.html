@@ -5,8 +5,13 @@
     <title>CSV to HTML</title>
 </head>
 <body>
-    <form onsubmit="return fileread();">
-        <h2>Upload a file to see its contents</h2>
+
+    <h2>Upload a file to see its contents</h2>
+    <div>
+        Delimiter: <input id="delim" type="text" placeholder="delimeter" value="," size="1">
+    </div>
+
+    <form onchange="return updateTable();">
         <!-- We have to use the manual input method because client sided html cannot automatically open local files -->
         <input id="fileForUpload" type=file>
     </form>
@@ -17,11 +22,8 @@
     </div>
 </body>
 <script>
-    /* This section should be used for variables that will differ for each CSV  */
-    let delim = ",";
-    /* This section should be used for variables that will differ for each CSV */
-
     function updateTable() {
+        let delim = document.getElementById("delim").value;
         let file = document.getElementById("fileForUpload").files[0];
         if (file) {
             let reader = new FileReader();
@@ -34,7 +36,7 @@
                 let tbl = document.createElement("table");
                 rows.forEach(function(part, i, rowArr){
                     if (rowArr[i]){
-                        rowArr[i] = rowArr[i].split(",");
+                        rowArr[i] = rowArr[i].split(delim);
                         let tr = document.createElement("tr");
                         rowArr[i].forEach(function(part2, j, valArr){
                             let td = document.createElement("td");
