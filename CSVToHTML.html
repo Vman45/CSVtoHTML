@@ -32,35 +32,34 @@
                 let contents = evt.target.result; // reads the file contents into this variable
                 let rows = contents.split(/\r?\n/); // split using regex so we can use on windows and unix
 
-                // Read the CSV 
+                // Read the CSV and insert its data into the table
                 let tbl = document.createElement("table");
-
-                // Loop through the rows
                 for (let rowIndex = 0; rowIndex < rows.length; rowIndex++){
                     let rowArr = rows[rowIndex].split(delim);
                     let tr = document.createElement("tr");
-
                     if (rowIndex === 0){
+                        // Add column count
+                        let tempTr = document.createElement("tr");
                         for (let colIndex = -1; colIndex < rowArr.length; colIndex++){
                             let tempData = document.createElement("th");
                             tempData.appendChild(document.createTextNode((colIndex !== -1 ) ? colIndex + 1 : ""));
-                            tr.appendChild(tempData);
+                            tempTr.appendChild(tempData);
+                        }
+                        tempTr.setAttribute("align", "center")
+                        tbl.appendChild(tempTr);
+                    }
+                    for (let colIndex = -1; colIndex < rowArr.length; colIndex++){
+                        if (colIndex === -1){
+                            // Add row count
+                            let td = document.createElement("th");
+                            td.appendChild(document.createTextNode(rowIndex));
+                            tr.appendChild(td);
+                        } else {
+                            let td = document.createElement("td");
+                            td.appendChild(document.createTextNode(rowArr[colIndex]));
+                            tr.appendChild(td);
                         }
                     }
-                    else {
-                        for (let colIndex = -1; colIndex < rowArr.length; colIndex++){
-                            if (colIndex === -1){
-                                let td = document.createElement("th");
-                                td.appendChild(document.createTextNode(rowIndex));
-                                tr.appendChild(td);
-                            } else {
-                                let td = document.createElement("td");
-                                td.appendChild(document.createTextNode(rowArr[colIndex]));
-                                tr.appendChild(td);
-                            }
-                        }
-                    }
-                    
                     tr.setAttribute("align", "center")
                     tbl.appendChild(tr);
                 }
