@@ -11,7 +11,7 @@
         Delimiter: <input id="delim" type="text" placeholder="delimeter" value="," size="1">
     </div>
 
-    <form onchange="return updateTable();">
+    <form onchange="updateTable();">
         <!-- We have to use the manual input method because client sided html cannot automatically open local files -->
         <input id="fileForUpload" type=file>
     </form>
@@ -34,23 +34,40 @@
 
                 // Read the CSV 
                 let tbl = document.createElement("table");
-                rows.forEach(function(part, i, rowArr){
-                    if (rowArr[i]){
-                        rowArr[i] = rowArr[i].split(delim);
-                        let tr = document.createElement("tr");
-                        rowArr[i].forEach(function(part2, j, valArr){
-                            let td = document.createElement("td");
-                            td.appendChild(document.createTextNode(valArr[j]));
-                            tr.appendChild(td);
-                        });
-                        tr.setAttribute("align", "center")
-                        tbl.appendChild(tr);
+
+                // Loop through the rows
+                for (let rowIndex = 0; rowIndex < rows.length; rowIndex++){
+                    let rowArr = rows[rowIndex].split(delim);
+                    let tr = document.createElement("tr");
+
+                    if (rowIndex === 0){
+                        for (let colIndex = -1; colIndex < rowArr.length; colIndex++){
+                            let tempData = document.createElement("th");
+                            tempData.appendChild(document.createTextNode((colIndex !== -1 ) ? colIndex + 1 : ""));
+                            tr.appendChild(tempData);
+                        }
                     }
-                });
+                    else {
+                        for (let colIndex = -1; colIndex < rowArr.length; colIndex++){
+                            if (colIndex === -1){
+                                let td = document.createElement("th");
+                                td.appendChild(document.createTextNode(rowIndex));
+                                tr.appendChild(td);
+                            } else {
+                                let td = document.createElement("td");
+                                td.appendChild(document.createTextNode(rowArr[colIndex]));
+                                tr.appendChild(td);
+                            }
+                        }
+                    }
+                    
+                    tr.setAttribute("align", "center")
+                    tbl.appendChild(tr);
+                }
                 tbl.setAttribute("border", "2");
 
-                let main = document.getElementById("fileContents");
-                main.parentNode.replaceChild(tbl, main);
+                document.getElementById("fileContents").innerHTML = "";
+                document.getElementById("fileContents").appendChild(tbl);
             }
             reader.onerror = function (evt) {
                 document.getElementById("fileContents").innerHTML = "error reading file";
